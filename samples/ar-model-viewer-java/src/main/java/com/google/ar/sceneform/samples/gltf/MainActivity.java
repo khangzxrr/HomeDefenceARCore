@@ -1,8 +1,11 @@
 package com.google.ar.sceneform.samples.gltf;
 
+import android.animation.ObjectAnimator;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.animation.LinearInterpolator;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,28 +21,41 @@ import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
+import com.google.ar.sceneform.FrameTime;
+import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.math.Vector3Evaluator;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.google.ar.sceneform.samples.gltf.game.manager.GameManager;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
+        Scene.OnUpdateListener,
         BaseArFragment.OnTapArPlaneListener,
         BaseArFragment.OnSessionConfigurationListener,
         ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
-    private Renderable model;
-    private ViewRenderable viewRenderable;
+
+
+    private TransformableNode mainCharacterNode;
+
+
+    private int enemyCount = 0;
+
+    GameManager gameManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        loadModels();
+
     }
 
     @Override
@@ -66,14 +82,18 @@ public class MainActivity extends AppCompatActivity implements
             arFragment.setOnSessionConfigurationListener(this);
             arFragment.setOnViewCreatedListener(this);
             arFragment.setOnTapArPlaneListener(this);
+
+
+            gameManager = new GameManager(this, arFragment);
+
         }
     }
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        }
+        config.setFocusMode(Config.FocusMode.AUTO);
+        config.setDepthMode(Config.DepthMode.DISABLED);
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR );
     }
 
     @Override
@@ -82,65 +102,25 @@ public class MainActivity extends AppCompatActivity implements
 
         // Fine adjust the maximum frame rate
         arSceneView.setFrameRateFactor(SceneView.FrameRate.FULL);
+        arSceneView.getScene().addOnUpdateListener(this::onUpdate);
     }
 
-    public void loadModels() {
-        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
-        ModelRenderable.builder()
-                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
-                .setIsFilamentGltf(true)
-                .setAsyncLoadEnabled(true)
-                .build()
-                .thenAccept(model -> {
-                    MainActivity activity = weakActivity.get();
-                    if (activity != null) {
-                        activity.model = model;
-                    }
-                })
-                .exceptionally(throwable -> {
-                    Toast.makeText(
-                            this, "Unable to load model", Toast.LENGTH_LONG).show();
-                    return null;
-                });
-        ViewRenderable.builder()
-                .setView(this, R.layout.view_model_title)
-                .build()
-                .thenAccept(viewRenderable -> {
-                    MainActivity activity = weakActivity.get();
-                    if (activity != null) {
-                        activity.viewRenderable = viewRenderable;
-                    }
-                })
-                .exceptionally(throwable -> {
-                    Toast.makeText(this, "Unable to load model", Toast.LENGTH_LONG).show();
-                    return null;
-                });
-    }
+
 
     @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-        if (model == null || viewRenderable == null) {
+        if (!gameManager.isLoadedModels()) {
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create the Anchor.
-        Anchor anchor = hitResult.createAnchor();
-        AnchorNode anchorNode = new AnchorNode(anchor);
-        anchorNode.setParent(arFragment.getArSceneView().getScene());
+        gameManager.setupHouse(hitResult);
+    }
 
-        // Create the transformable model and add it to the anchor.
-        TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
-        model.setParent(anchorNode);
-        model.setRenderable(this.model)
-                .animate(true).start();
-        model.select();
 
-        Node titleNode = new Node();
-        titleNode.setParent(model);
-        titleNode.setEnabled(false);
-        titleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
-        titleNode.setRenderable(viewRenderable);
-        titleNode.setEnabled(true);
+
+    @Override
+    public void onUpdate(FrameTime frameTime) {
+        gameManager.spawnEnemies();
     }
 }

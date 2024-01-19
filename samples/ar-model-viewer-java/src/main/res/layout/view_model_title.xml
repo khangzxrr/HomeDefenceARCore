@@ -1,10 +1,10 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:background="@drawable/rounded_bg"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="6dp"
-    android:text="Tiger"
-    android:textAlignment="center" />
+<ProgressBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:indeterminate="false"
+    android:progress="100"
+    android:max="100"
+    android:progressTint="#66923d"
+    style="?android:attr/progressBarStyleHorizontal"
+    android:layout_height="20dp" />
+

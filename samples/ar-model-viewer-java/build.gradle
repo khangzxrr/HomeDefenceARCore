@@ -23,6 +23,10 @@ android {
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1'
+}
+
 dependencies {
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.fragment:fragment:$fragment_version"
