@@ -1,11 +1,11 @@
 package com.google.ar.sceneform.samples.gltf;
 
-import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,48 +14,39 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
-import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
-import com.google.ar.core.HitResult;
-import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
-import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
-import com.google.ar.sceneform.HitTestResult;
-import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
-import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.math.Vector3Evaluator;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.Renderable;
-import com.google.ar.sceneform.rendering.ViewRenderable;
-import com.google.ar.sceneform.samples.gltf.game.manager.GameManager;
+import com.google.ar.sceneform.samples.gltf.game.manager.EnemyNode;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 
-import java.lang.ref.WeakReference;
-import java.util.Random;
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
         Scene.OnUpdateListener,
-        BaseArFragment.OnTapArPlaneListener,
         BaseArFragment.OnSessionConfigurationListener,
         ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
+    private ModelRenderable spaceInvaderModel;
 
+    Date spawnEnemiesStartTime;
 
-    private TransformableNode mainCharacterNode;
-
-
-    private int enemyCount = 0;
-
-    GameManager gameManager;
+    private static final int MAX_HEALTH = 6;
+    private int health;
+    private long score;
+    private ArrayList<ImageView> healthImgs;
+    private boolean isReady;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +64,79 @@ public class MainActivity extends AppCompatActivity implements
         }
 
 
+        loadModels();
+        restart();
+    }
+
+    public void restart() {
+        health = 6;
+        healthImgs = new ArrayList<>();
+
+        healthImgs.add(findViewById(R.id.heart0));
+        healthImgs.add(findViewById(R.id.heart1));
+        healthImgs.add(findViewById(R.id.heart2));
+        healthImgs.add(findViewById(R.id.heart3));
+        healthImgs.add(findViewById(R.id.heart4));
+        healthImgs.add(findViewById(R.id.heart5));
+
+        for (ImageView healthImage : healthImgs) {
+            healthImage.setImageResource(R.drawable.heart);
+        }
+    }
+
+    public void updateScore(long offset) {
+        score += offset;
+
+        TextView scoreTextview = findViewById(R.id.scoreTextView);
+        scoreTextview.setText(String.format("Score: %d", score));
+    }
+    public void navigateToGameOverActivity() {
+        Intent intent = new Intent(this, GameOverActivity.class);
+        startActivity(intent);
+        finish();
+    }
+    public void modifyHealth(int offset) {
+        if (health == 0) {
+            return;
+        }
+
+        if (health == MAX_HEALTH && offset > 0) {
+            return;
+        }
+
+        health += offset;
+
+        if (health < MAX_HEALTH) {
+            int totalMissingHealth = MAX_HEALTH - health;
+
+            for(int i = healthImgs.size() - 1; i > healthImgs.size() - 1 - totalMissingHealth; i--) {
+                healthImgs.get(i).setImageResource(R.drawable.heart_empty);
+            }
+        }
+
+        if (health == 0) { //game over
+            navigateToGameOverActivity();
+        }
+    }
+
+
+
+    public void loadModels() {
+
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("space_invader.glb"))
+                .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
+                .build()
+                .thenAccept(model -> {
+                    spaceInvaderModel = model;
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(
+                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                    return null;
+                });
+
     }
 
     @Override
@@ -81,19 +145,17 @@ public class MainActivity extends AppCompatActivity implements
             arFragment = (ArFragment) fragment;
             arFragment.setOnSessionConfigurationListener(this);
             arFragment.setOnViewCreatedListener(this);
-            arFragment.setOnTapArPlaneListener(this);
 
-
-            gameManager = new GameManager(this, arFragment);
-
+            isReady = true;
         }
     }
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
         config.setFocusMode(Config.FocusMode.AUTO);
-        config.setDepthMode(Config.DepthMode.DISABLED);
+        arFragment.getInstructionsController().setEnabled(false);
         config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR );
+
     }
 
     @Override
@@ -105,22 +167,44 @@ public class MainActivity extends AppCompatActivity implements
         arSceneView.getScene().addOnUpdateListener(this::onUpdate);
     }
 
+    public void spawnEnemy(){
 
-
-    @Override
-    public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-        if (!gameManager.isLoadedModels()) {
-            Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
+        if (!isReady) {
             return;
         }
 
-        gameManager.setupHouse(hitResult);
-    }
+        Log.i("onUpdate", "SPAWN enemy space invader: " + ((spaceInvaderModel != null) ? "OK" : "NULL"));
 
+
+        EnemyNode enemyNode = new EnemyNode(spaceInvaderModel, arFragment.getArSceneView().getScene(), arFragment.getArSceneView().getScene().getCamera(), () -> {
+            modifyHealth(-1);
+        }, () -> {
+            updateScore(100);
+        });
+        enemyNode.spawn();
+
+
+    }
 
 
     @Override
     public void onUpdate(FrameTime frameTime) {
-        gameManager.spawnEnemies();
+        if (spawnEnemiesStartTime == null) {
+            spawnEnemiesStartTime = new Date();
+        }
+
+        Date currentDateTime = new Date();
+
+        long millis = currentDateTime.getTime() - spawnEnemiesStartTime.getTime();
+
+        if (millis > 5000) {
+            spawnEnemiesStartTime = new Date();
+            spawnEnemy();
+        }
+
+
+
+
+
     }
 }

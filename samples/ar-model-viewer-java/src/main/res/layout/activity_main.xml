@@ -1,11 +1,113 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
   <androidx.fragment.app.FragmentContainerView
       android:id="@+id/arFragment"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-</FrameLayout>
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.0" />
+
+  <LinearLayout
+      android:id="@+id/linearLayout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="15dp"
+      android:layout_marginEnd="15dp"
+      android:gravity="center"
+      android:orientation="horizontal"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/arFragment">
+
+    <ImageView
+        android:id="@+id/invaderScoreImageView"
+        android:layout_width="62dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/space_invader"
+        app:srcCompat="@drawable/space_invader" />
+
+    <TextView
+        android:id="@+id/scoreTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Score: 0"
+        android:textColor="#ffffff"
+        android:textSize="30sp" />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintEnd_toEndOf="@+id/arFragment"
+      app:layout_constraintStart_toStartOf="@+id/arFragment"
+      app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+    <ImageView
+        android:id="@+id/heart0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+    <ImageView
+        android:id="@+id/heart1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+    <ImageView
+        android:id="@+id/heart2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+    <ImageView
+        android:id="@+id/heart3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+    <ImageView
+        android:id="@+id/heart4"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+    <ImageView
+        android:id="@+id/heart5"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/heart"
+        app:srcCompat="@drawable/heart"
+        tools:srcCompat="@drawable/heart" />
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

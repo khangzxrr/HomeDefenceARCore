@@ -23,19 +23,23 @@ public class EnemyNode extends Node {
 
     private final IOnTouchTargetCallback onTouchTargetCallback;
 
-    private boolean isTouchedTarget;
+    private boolean touchedPlayer;
+
+    ObjectAnimator objectAnimation;
+
     public EnemyNode(Renderable enemyModel, Scene scene, Node targetNode, IOnTouchTargetCallback onTouchTargetCallback, IOnDestroyCallback onDestroyCallback) {
 
         this.onTouchTargetCallback = onTouchTargetCallback;
-        isTouchedTarget = false;
 
-
+        touchedPlayer = false;
         this.targetNode = targetNode;
         model = enemyModel;
         this.scene = scene;
 
         setOnTapListener((hitTestResult, motionEvent) -> {
             setParent(null);
+
+            objectAnimation.cancel();
             onDestroyCallback.onDestroy();
 
             Log.i("onDestroy", "callback on tap destroy");
@@ -53,12 +57,15 @@ public class EnemyNode extends Node {
 
         Random random = new Random();
 
-        float randomXOffset = (random.nextFloat() + 0.2f)  * (random.nextBoolean() ? 1 : -1);
-        float randomZOffset = (random.nextFloat() + 0.2f)  * (random.nextBoolean() ? 1 : -1);
+//        float randomXOffset = 0;
+//        float randomZOffset = 0;
+        float randomXOffset = (random.nextFloat() + 0.01f)  * (random.nextBoolean() ? 1 : -1);
+        float randomZOffset = (random.nextFloat() + 0.01f)  * (random.nextBoolean() ? 1 : -1);
 
+        Vector3 randomForwardDirection = targetNode.getForward().scaled(1f);
+        Vector3 startNodeWorldPosition = Vector3.add(targetNode.getWorldPosition(), new Vector3(randomForwardDirection.x + randomXOffset, randomForwardDirection.y, randomForwardDirection.z + randomZOffset));
 
-        Vector3 startNodeWorldPosition = targetNode.getWorldPosition();
-        startNodeWorldPosition.set(startNodeWorldPosition.x + randomXOffset, startNodeWorldPosition.y, startNodeWorldPosition.z + randomZOffset);
+        startNodeWorldPosition.set(startNodeWorldPosition.x, startNodeWorldPosition.y, startNodeWorldPosition.z);
         setWorldPosition(startNodeWorldPosition);
 
         startWalking(this, targetNode);
@@ -66,17 +73,32 @@ public class EnemyNode extends Node {
 
 
     private void startWalking(Node startNode, Node endNode) {
-        ObjectAnimator objectAnimation = new ObjectAnimator();
+        objectAnimation = new ObjectAnimator();
         objectAnimation.setAutoCancel(true);
         objectAnimation.setTarget(startNode);
 
+        Vector3 endNodePosition = endNode.getWorldPosition();
+
         // All the positions should be world positions
         // The first position is the start, and the second is the end.
-        objectAnimation.setObjectValues(startNode.getWorldPosition(), endNode.getWorldPosition());
+        objectAnimation.setObjectValues(startNode.getWorldPosition(), endNodePosition);
+
 
         // Use setWorldPosition to position andy.
         objectAnimation.setPropertyName("worldPosition");
 
+        objectAnimation.addUpdateListener(valueAnimator -> {
+
+            Vector3 currentAnimatedPostion = (Vector3) valueAnimator.getAnimatedValue("worldPosition");
+
+            if (getDistanceBetweenVectorsInMeters(endNodePosition, currentAnimatedPostion) < 0.01f) {
+                objectAnimation.cancel();
+                setParent(null);
+
+                Log.i("animation.addUpdateListener", "touch player!");
+                onTouchTargetCallback.onTouchTarget();
+            }
+        });
         // The Vector3Evaluator is used to evaluator 2 vector3 and return the next
         // vector3.  The default is to use lerp.
         objectAnimation.setEvaluator(new Vector3Evaluator());
@@ -87,25 +109,14 @@ public class EnemyNode extends Node {
         objectAnimation.start();
 
 
+
     }
 
     @Override
-    public void onTransformChange(Node originatingNode) {
-        super.onTransformChange(originatingNode);
+    public void onDeactivate() {
+        super.onDeactivate();
 
-
-
-        if ((!isTouchedTarget) && (getDistanceBetweenVectorsInMeters(getWorldPosition(), targetNode.getWorldPosition()) < 0.01f)){
-
-            isTouchedTarget = true;
-
-            Log.i("position", String.valueOf(getDistanceBetweenVectorsInMeters(this.getWorldPosition(), targetNode.getWorldPosition())));
-
-            originatingNode.setParent(null);
-
-
-            onTouchTargetCallback.onTouchTarget();
-        }
+        Log.i("on deactive node", "deactive!!!");
     }
 
 
