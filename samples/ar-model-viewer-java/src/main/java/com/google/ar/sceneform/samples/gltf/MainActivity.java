@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +23,9 @@ import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.samples.gltf.dao.UserManagement;
 import com.google.ar.sceneform.samples.gltf.game.manager.EnemyNode;
+import com.google.ar.sceneform.samples.gltf.repository.AppDatabase;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 
@@ -43,10 +46,14 @@ public class MainActivity extends AppCompatActivity implements
     Date spawnEnemiesStartTime;
 
     private static final int MAX_HEALTH = 6;
+    private static final int MAX_GAME_SPEED = 4000;
     private int health;
     private long score;
     private ArrayList<ImageView> healthImgs;
+    private ArrayList<ImageView> gameSpeedImgs;
     private boolean isReady;
+    private int killCountDuration;
+    private int gameSpeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements
 
     public void restart() {
         health = 6;
+        gameSpeed = 4000;
+        killCountDuration = 0;
         healthImgs = new ArrayList<>();
 
         healthImgs.add(findViewById(R.id.heart0));
@@ -82,13 +91,44 @@ public class MainActivity extends AppCompatActivity implements
         for (ImageView healthImage : healthImgs) {
             healthImage.setImageResource(R.drawable.heart);
         }
+
+        gameSpeedImgs = new ArrayList<>();
+        gameSpeedImgs.add(findViewById(R.id.gameSpeed0));
+        gameSpeedImgs.add(findViewById(R.id.gameSpeed1));
+        gameSpeedImgs.add(findViewById(R.id.gameSpeed2));
+        gameSpeedImgs.add(findViewById(R.id.gameSpeed3));
+
+        updateGameSpeed(0);
     }
 
+    public void updateGameSpeed(int offset) {
+
+        if (gameSpeed + offset < 1000) {
+            return;
+        }
+
+        if (gameSpeed + offset > MAX_GAME_SPEED) {
+            gameSpeed = MAX_HEALTH;
+        }
+
+        gameSpeed += offset;
+
+        for(int i = 0 ; i < gameSpeedImgs.size(); i++) {
+            gameSpeedImgs.get(i).setVisibility(View.INVISIBLE);
+
+            Log.i("gameSpeed", String.valueOf((MAX_GAME_SPEED - gameSpeed) / 1000));
+            if (i <  (MAX_GAME_SPEED - gameSpeed) / 1000) {
+                gameSpeedImgs.get(i).setVisibility(View.VISIBLE);
+            }
+        }
+    }
     public void updateScore(long offset) {
         score += offset;
 
         TextView scoreTextview = findViewById(R.id.scoreTextView);
         scoreTextview.setText(String.format("Score: %d", score));
+
+        AppDatabase.getInstance(this).userDao().updateScore(score, UserManagement.currentUser.username);
     }
     public void navigateToGameOverActivity() {
         Intent intent = new Intent(this, GameOverActivity.class);
@@ -105,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         health += offset;
+
+        if (offset < 0) { //losing health
+
+            updateGameSpeed(1000);
+        }
 
         if (health < MAX_HEALTH) {
             int totalMissingHealth = MAX_HEALTH - health;
@@ -167,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements
         arSceneView.getScene().addOnUpdateListener(this::onUpdate);
     }
 
+
     public void spawnEnemy(){
 
         if (!isReady) {
@@ -180,6 +226,8 @@ public class MainActivity extends AppCompatActivity implements
             modifyHealth(-1);
         }, () -> {
             updateScore(100);
+
+            updateGameSpeed(-100);
         });
         enemyNode.spawn();
 
@@ -197,10 +245,10 @@ public class MainActivity extends AppCompatActivity implements
 
         long millis = currentDateTime.getTime() - spawnEnemiesStartTime.getTime();
 
-        if (millis > 5000) {
-            spawnEnemiesStartTime = new Date();
-            spawnEnemy();
-        }
+        if (millis < gameSpeed) return;
+
+        spawnEnemiesStartTime = new Date();
+        spawnEnemy();
 
 
 

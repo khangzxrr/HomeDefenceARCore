@@ -28,14 +28,6 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="@+id/arFragment">
 
-    <ImageView
-        android:id="@+id/invaderScoreImageView"
-        android:layout_width="62dp"
-        android:layout_height="50dp"
-        android:layout_weight="1"
-        android:src="@drawable/space_invader"
-        app:srcCompat="@drawable/space_invader" />
-
     <TextView
         android:id="@+id/scoreTextView"
         android:layout_width="wrap_content"
@@ -47,6 +39,7 @@
   </LinearLayout>
 
   <LinearLayout
+      android:id="@+id/linearLayout2"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:orientation="horizontal"
@@ -107,6 +100,53 @@
         android:src="@drawable/heart"
         app:srcCompat="@drawable/heart"
         tools:srcCompat="@drawable/heart" />
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toBottomOf="@+id/arFragment"
+      app:layout_constraintEnd_toEndOf="@+id/arFragment"
+      app:layout_constraintStart_toStartOf="parent">
+
+    <ImageView
+        android:id="@+id/gameSpeed0"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/space_invader"
+        app:srcCompat="@drawable/space_invader"
+        tools:srcCompat="@drawable/space_invader" />
+
+    <ImageView
+        android:id="@+id/gameSpeed1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/space_invader"
+        app:srcCompat="@drawable/space_invader"
+        tools:srcCompat="@drawable/space_invader" />
+
+    <ImageView
+        android:id="@+id/gameSpeed2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/space_invader"
+        app:srcCompat="@drawable/space_invader"
+        tools:srcCompat="@drawable/space_invader" />
+
+    <ImageView
+        android:id="@+id/gameSpeed3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/space_invader"
+        app:srcCompat="@drawable/space_invader"
+        tools:srcCompat="@drawable/space_invader" />
 
   </LinearLayout>
 
