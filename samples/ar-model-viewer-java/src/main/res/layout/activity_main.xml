@@ -17,6 +17,19 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.0" />
 
+  <ImageView
+      android:id="@+id/useHealPotionBtn"
+      android:layout_width="80dp"
+      android:layout_height="83dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginBottom="16dp"
+      android:layout_weight="1"
+      android:src="@drawable/heart"
+      app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:srcCompat="@drawable/heart"
+      tools:srcCompat="@drawable/heart" />
+
   <LinearLayout
       android:id="@+id/linearLayout"
       android:layout_width="wrap_content"
@@ -33,6 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:fontFamily="@font/pixel_font"
         android:text="Score: 0"
         android:textColor="#ffffff"
         android:textSize="30sp" />
@@ -42,6 +56,7 @@
       android:id="@+id/linearLayout2"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
       android:orientation="horizontal"
       app:layout_constraintEnd_toEndOf="@+id/arFragment"
       app:layout_constraintStart_toStartOf="@+id/arFragment"
@@ -104,6 +119,7 @@
   </LinearLayout>
 
   <LinearLayout
+      android:id="@+id/linearLayout3"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginBottom="5dp"
@@ -149,5 +165,18 @@
         tools:srcCompat="@drawable/space_invader" />
 
   </LinearLayout>
+
+  <TextView
+      android:id="@+id/healPointRemainTextView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="8dp"
+      android:textSize="20sp"
+      android:text="x3"
+      android:fontFamily="@font/pixel_font"
+      app:layout_constraintBottom_toTopOf="@+id/useHealPotionBtn"
+      app:layout_constraintEnd_toEndOf="@+id/useHealPotionBtn"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="@+id/useHealPotionBtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

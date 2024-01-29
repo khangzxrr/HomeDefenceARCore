@@ -16,9 +16,14 @@ public class User {
     @ColumnInfo(name = "score")
     public long score;
 
-    public User(String username, long score) {
+    @ColumnInfo(name = "heal_potion")
+    public long healPotion;
+
+    public User(String username) {
 
         this.username = username;
-        this.score = score;
+
+        score = 9999;
+        healPotion = 0;
     }
 }

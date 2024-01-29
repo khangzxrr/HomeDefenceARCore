@@ -11,7 +11,7 @@ import java.util.List;
 
 @Dao
 public interface UserDAO {
-    @Query("SELECT * FROM user")
+    @Query("SELECT * FROM user ORDER BY score DESC")
     List<User> getAll();
 
     @Query("SELECT * FROM user WHERE username = :username")
@@ -22,6 +22,9 @@ public interface UserDAO {
 
     @Query("UPDATE user SET score = score + :score WHERE username = :username")
     void updateScore(long score, String username);
+
+    @Query("UPDATE user SET heal_potion = heal_potion + :healPotionOffset WHERE username = :username")
+    void updateHealPotion(long healPotionOffset, String username);
 
 
 

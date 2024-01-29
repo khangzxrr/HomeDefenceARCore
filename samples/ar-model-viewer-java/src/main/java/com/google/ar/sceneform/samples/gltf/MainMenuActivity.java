@@ -6,6 +6,10 @@ import androidx.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.ar.sceneform.samples.gltf.dao.UserManagement;
@@ -29,6 +33,16 @@ public class MainMenuActivity extends AppCompatActivity {
             finish();
         }
 
+        ImageView logo = findViewById(R.id.mainMenuLogo);
+
+        ScaleAnimation animation = new ScaleAnimation(0.7f, 1f, 0.7f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setDuration(700);
+        animation.setFillAfter(true);
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setRepeatMode(Animation.REVERSE);
+
+        logo.startAnimation(animation);
+
 
         TextView greetingTextView = findViewById(R.id.useGreetingTextView);
         greetingTextView.setText(String.format("Hello %s, your score: %d", users.get(0).username, users.get(0).score));
@@ -37,6 +51,16 @@ public class MainMenuActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
+        });
+
+        findViewById(R.id.scoreboardBtn).setOnClickListener(view -> {
+            Intent intent = new Intent(this, ScoreboardActivity.class);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.shopBtn).setOnClickListener(view -> {
+            Intent intent = new Intent(this, ShopActivity.class);
+            startActivity(intent);
         });
 
 

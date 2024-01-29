@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity{
                 builder.setMessage("Account is not found, do you want to create a new account?");
                 builder.setPositiveButton("Create account", (dialog, id) -> {
                     // User taps OK button.
-                    User newUser = new User(usernameTextField.getText().toString(), 0);
+                    User newUser = new User(usernameTextField.getText().toString());
                     AppDatabase.getInstance(this).userDao().insertAll(newUser);
 
                     UserManagement.currentUser = newUser;
