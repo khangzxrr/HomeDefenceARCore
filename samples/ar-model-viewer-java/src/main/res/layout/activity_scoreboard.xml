@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScoreboardActivity">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/scoreboard"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="-45dp" />
+
+    <TextView
+        android:id="@+id/top2TextView"
+        android:fontFamily="@font/pixel_font"
+        android:layout_width="wrap_content"
+        android:background="#ffcf40"
+        android:textAlignment="center"
+        android:layout_height="150dp"
+        android:text="Not yet!"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/top1TextView"
+        app:layout_constraintEnd_toStartOf="@+id/top1TextView" />
+
+    <TextView
+        android:id="@+id/top3TextView"
+        android:fontFamily="@font/pixel_font"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:background="#ffdc73"
+        android:text="Not yet!"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/top1TextView"
+        app:layout_constraintStart_toEndOf="@+id/top1TextView" />
+
+    <TextView
+        android:id="@+id/top1TextView"
+        android:layout_width="wrap_content"
+        android:fontFamily="@font/pixel_font"
+        android:layout_height="200dp"
+        android:background="#FFD700"
+        android:text="Not yet!"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="119dp"
+        android:layout_height="87dp"
+        android:layout_marginTop="44dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView4"
+        app:srcCompat="@drawable/space_invader" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TOP 2"
+        android:fontFamily="@font/pixel_font"
+        android:textColor="#ffff"
+        app:layout_constraintBottom_toTopOf="@+id/top2TextView"
+        app:layout_constraintEnd_toEndOf="@+id/top2TextView"
+        app:layout_constraintStart_toStartOf="@+id/top2TextView" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:fontFamily="@font/pixel_font"
+        android:layout_height="wrap_content"
+        android:text="TOP 3"
+        android:textColor="#ffff"
+        app:layout_constraintBottom_toTopOf="@+id/top3TextView"
+        app:layout_constraintEnd_toEndOf="@+id/top3TextView"
+        app:layout_constraintStart_toStartOf="@+id/top3TextView" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/pixel_font"
+        android:text="TOP 1"
+        android:textColor="#ffff"
+        app:layout_constraintBottom_toTopOf="@+id/top1TextView"
+        app:layout_constraintEnd_toEndOf="@+id/top1TextView"
+        app:layout_constraintStart_toStartOf="@+id/top1TextView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

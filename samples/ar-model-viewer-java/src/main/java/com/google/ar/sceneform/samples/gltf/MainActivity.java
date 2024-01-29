@@ -1,6 +1,7 @@
 package com.google.ar.sceneform.samples.gltf;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -61,6 +62,14 @@ public class MainActivity extends AppCompatActivity implements
     private int gameSpeed;
 
     private ImageView useHealPotionBtn;
+
+    MediaPlayer killedInvaderPlayer;
+    MediaPlayer loseHealthPlayer;
+
+    MediaPlayer healPlayer;
+
+
+    MediaPlayer backGroundPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,11 +88,31 @@ public class MainActivity extends AppCompatActivity implements
 
         loadModels();
         restart();
+        loadMedias();
 
         useHealPotionBtn = findViewById(R.id.useHealPotionBtn);
         useHealPotionBtn.setOnClickListener(this);
 
         updateHealPotionCountTextView();
+    }
+
+    private void loadMedias(){
+        killedInvaderPlayer = MediaPlayer.create(this, R.raw.invaderkilled);
+        loseHealthPlayer = MediaPlayer.create(this, R.raw.explosion);
+        healPlayer = MediaPlayer.create(this, R.raw.heal);
+        backGroundPlayer = MediaPlayer.create(this, R.raw.background);
+
+        backGroundPlayer.setLooping(true);
+        backGroundPlayer.start();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        backGroundPlayer.stop();
+
     }
 
     private void updateHealPotionCountTextView(){
@@ -115,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements
         useHealPotionBtn.startAnimation(animation);
 
         modifyHealth(1);
+
+        healPlayer.start();
 
 
     }
@@ -194,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements
         health += offset;
 
         if (offset < 0) { //losing health
-
+            loseHealthPlayer.start();
             updateGameSpeed(1000);
         }
 
@@ -281,9 +312,14 @@ public class MainActivity extends AppCompatActivity implements
         EnemyNode enemyNode = new EnemyNode(spaceInvaderModel, arFragment.getArSceneView().getScene(), arFragment.getArSceneView().getScene().getCamera(), () -> {
             modifyHealth(-1);
         }, () -> {
+
+            killedInvaderPlayer.start();
+
             updateScore(100);
 
             updateGameSpeed(-100);
+
+
         });
         enemyNode.spawn();
 

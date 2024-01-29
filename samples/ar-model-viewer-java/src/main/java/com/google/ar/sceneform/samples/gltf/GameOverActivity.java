@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.particles.ParticleSystem;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 
 public class GameOverActivity extends AppCompatActivity {
@@ -31,5 +32,8 @@ public class GameOverActivity extends AppCompatActivity {
                 .setRotationSpeed(144)
                 .setAcceleration(0.00005f, 90)
                 .emit(findViewById(R.id.tryAgainBtn), 8);
+
+        MediaPlayer gameOverPlayer = MediaPlayer.create(this, R.raw.gameover);
+        gameOverPlayer.start();
     }
 }
