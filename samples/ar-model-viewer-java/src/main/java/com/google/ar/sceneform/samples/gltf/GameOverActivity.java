@@ -6,6 +6,15 @@ import androidx.particles.ParticleSystem;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.widget.TextView;
+
+import com.google.ar.sceneform.samples.gltf.dao.UserManagement;
+import com.google.ar.sceneform.samples.gltf.model.User;
+import com.google.ar.sceneform.samples.gltf.repository.AppDatabase;
+
+import org.w3c.dom.Text;
+
+import java.util.List;
 
 public class GameOverActivity extends AppCompatActivity {
 
@@ -13,6 +22,18 @@ public class GameOverActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_over);
+
+        TextView scoreView = findViewById(R.id.gameOverScoreView);
+
+        List<User> users = AppDatabase.getInstance(this).userDao().findUserByUserName(UserManagement.currentUser.username);
+
+        if (users.size() == 0){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        scoreView.setText(String.format("Hello %s, your score: %d", users.get(0).username, users.get(0).score));
 
         findViewById(R.id.tryAgainBtn).setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);

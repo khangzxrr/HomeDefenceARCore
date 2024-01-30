@@ -20,6 +20,7 @@ import java.util.List;
 
 public class MainMenuActivity extends AppCompatActivity {
 
+    TextView greetingTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,7 @@ public class MainMenuActivity extends AppCompatActivity {
         logo.startAnimation(animation);
 
 
-        TextView greetingTextView = findViewById(R.id.useGreetingTextView);
+        greetingTextView = findViewById(R.id.useGreetingTextView);
         greetingTextView.setText(String.format("Hello %s, your score: %d", users.get(0).username, users.get(0).score));
 
         findViewById(R.id.startGameBtn).setOnClickListener(view -> {
@@ -62,6 +63,23 @@ public class MainMenuActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ShopActivity.class);
             startActivity(intent);
         });
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<User> users = AppDatabase.getInstance(this).userDao().findUserByUserName(UserManagement.currentUser.username);
+
+        if (users.size() == 0){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        greetingTextView.setText(String.format("Hello %s, your score: %d", users.get(0).username, users.get(0).score));
 
 
     }

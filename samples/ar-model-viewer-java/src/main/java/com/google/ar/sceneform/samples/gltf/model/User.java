@@ -23,7 +23,7 @@ public class User {
 
         this.username = username;
 
-        score = 9999;
+        score = 600;
         healPotion = 0;
     }
 }

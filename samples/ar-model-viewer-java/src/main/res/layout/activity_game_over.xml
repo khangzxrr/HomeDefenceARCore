@@ -50,4 +50,16 @@
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/space_invader" />
+
+    <TextView
+        android:id="@+id/gameOverScoreView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="TextView"
+        android:fontFamily="@font/pixel_font"
+        android:textColor="#ffff"
+        app:layout_constraintBottom_toTopOf="@+id/tryAgainBtn"
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="@+id/imageView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
